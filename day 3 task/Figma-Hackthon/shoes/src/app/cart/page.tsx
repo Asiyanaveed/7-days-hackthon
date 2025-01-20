@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 interface Iproduct{
   name: string,

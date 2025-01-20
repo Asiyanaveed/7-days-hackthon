@@ -6,6 +6,7 @@ import { client } from "@/sanity/lib/client"
 
 
 interface Product {
+  productName: any
   name: string
   category: string
   price: number
@@ -20,7 +21,7 @@ interface Product {
 export default async function ProductsCards() {
 
   const res : Product[] = await client.fetch(`*[_type == "product"]{
-         name,
+         productName,
          category,
          price,
          inventory,
@@ -38,7 +39,7 @@ export default async function ProductsCards() {
       {res.map((item : Product, index : number) => {
         return (
           <Card className="relative w-full max-w-[348px] overflow-hidden border-none shadow-none hover:scale-[1.02]" key={index}>
-            <Link href={`/products/ProductDetail?name=${item.name}&category=${item.category}&description=${item.description}
+            <Link href={`/products/ProductDetail?productName=${item.productName}&category=${item.category}&description=${item.description}
               &price=${item.price}&image=${item.image}&inventory=${item.inventory}&colors=${item.colors}&status=${item.status}`}>
             <div className="relative h-[348px] w-full bg-[#F5F5F5]">
               <Image
@@ -58,7 +59,7 @@ export default async function ProductsCards() {
               )}
               <div className="space-y-1">
                 <h3 className="text-[15px] font-medium leading-6 text-[#111111] font-['Helvetica_Neue']">
-                  {item.name}
+                  {item.productName}
                 </h3>
                 <p className="text-[15px] leading-6 text-[#757575] font-['ABeeZee']">
                   {item.description}

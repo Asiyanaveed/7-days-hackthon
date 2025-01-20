@@ -17,7 +17,7 @@ import { useEffect, useState } from "react"
 
 interface ICart {
   name: string,
-  price: string,
+  price: number,
   image: string,
   quantity: number
 }
@@ -25,13 +25,29 @@ interface ICart {
 export default function CheckoutForm() {
   
    const [cartItems, setCartItems] = useState<ICart[]>([])
-
+   const [shipCost, setShipCost] = useState(0)
 
 
   useEffect(() => {
     const data = localStorage.getItem("cart")
     const cart = data ? JSON.parse(data) : []
+    setCartItems(cart)
+
+    const ShipmentData = localStorage.getItem("ShipmentData")
+    const shipData = ShipmentData ? JSON.parse(ShipmentData) : []
+    const shipCost = shipData.shipment_cost.amount.toFixed(2)
+    setShipCost(shipCost)
   }, [])
+
+  function handlePayment(){
+    alert("payment successfull ✅")
+    
+    localStorage.setItem("cart", JSON.stringify([]))
+    setCartItems([])
+  }
+
+ const totalAmount = Number(cartItems.reduce((acc: number, item: ICart) => acc + Number(item.price * item.quantity), 0)) + Number(shipCost ? shipCost : 0)
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 mt-[99px]">
       <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-2">
@@ -150,16 +166,16 @@ export default function CheckoutForm() {
           <div className="mt-4 space-y-4">
             <div className="flex justify-between text-sm text-gray-600">
               <span>Subtotal</span>
-              <span>₹ 20,890.00</span>
+              <span>₹ {cartItems.reduce((acc: number, item: ICart) => acc + Number(item.price * item.quantity), 0)}</span>
             </div>
             <div className="flex justify-between text-sm text-gray-600">
               <span>Delivery/Shipping</span>
-              <span>Free</span>
+              <span>{shipCost ? "₹ " + shipCost : "Free"}</span>
             </div>
             <div className="border-t pt-4">
               <div className="flex justify-between font-medium">
                 <span>Total</span>
-                <span>₹ 20,890.00</span>
+                <span>₹ {totalAmount}</span>
               </div>
               <p className="mt-1 text-xs text-gray-500">
                 (The total reflects the price of your order, including all duties and taxes)
@@ -167,38 +183,31 @@ export default function CheckoutForm() {
             </div>
 
             <div className="space-y-4 pt-6">
-              <h3 className="font-bold">Arrives Mon, 27 Mar - Wed, 12 Apr</h3>
-              <div className="flex gap-4 relative">
+            {cartItems.map((item: ICart, index: number)=>{return (
+                <div className="flex gap-4 relative" key={index}>
                 <Image
-                  src="/cart/pic1.png"
-                  alt="Nike Dri-FIT ADV TechKnit Ultra"
-                  width={208}
-                  height={208}
+                  src={item.image}
+                  alt="nike  shoes"
+                  width={80}
+                  height={80}
                 />
                 <div className="w-full space-y-1">
-                  <p className="text-sm">Nike Dri-FIT ADV TechKnit Ultra Men&apos;s Short-Sleeve Running Top</p>
-                  <p className="text-sm text-gray-500">Qty 1</p>
-                  <p className="text-sm text-gray-500">Size L</p>
-                  <p className="text-sm text-gray-500">₹ 3,895.00</p>
+                  <p className="text-sm">{item.name}</p>
+                  <p className="text-sm text-gray-500">Qty {item.quantity}</p>
+                  <p className="text-sm text-gray-500">₹ {item.price * item.quantity}</p>
                 </div>
               </div>
-              <div className="flex gap-4 relative">
-                <Image
-                  src="/cart/pic3.png"
-                  alt="Nike Air Max 97 SE"
-                  width={208}
-                  height={208}
-                />
-                <div className="space-y-1">
-                  <p className="text-sm">Nike Air Max 97 SE Men&apos;s Shoes</p>
-                  <p className="text-sm text-gray-500">Qty 1</p>
-                  <p className="text-sm text-gray-500">Size UK 8</p>
-                  <p className="text-sm text-gray-500">₹ 16,995.00</p>
-                </div>
-              </div>
+              )})}
+              <h3 className="font-bold">Arrives Mon, 27 Mar - Wed, 12 Apr</h3>
+              
+              
+                    <div >
+                     <Button className="w-full" onClick={handlePayment}>Let's Pay</Button>
+                     </div>
             </div>
           </div>
         </Card>
+        
       </div>
     </div>
   )
